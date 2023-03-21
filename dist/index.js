@@ -25,7 +25,11 @@ app.get("/api/foods/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, 
         return res.json(json);
     }
     catch (e) {
-        return res.json({ error: "an unknown error occurred" });
+        return next(e);
     }
 }));
+app.use((err, req, res, next) => {
+    if (err)
+        res.status(500).json({ error: "an unknown error occurred" });
+});
 app.listen(443, () => console.log("listening at port 443..."));
