@@ -40,4 +40,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.listen(443, () => console.log("listening at port 443..."));
+app.listen(process.env.PORT || 80, () =>
+  console.log(`listening at port ${process.env.PORT || 80}...`)
+);
