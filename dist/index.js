@@ -16,6 +16,18 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
+app.get("/api/foods/search", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.query.query === undefined)
+        req.query.query = "";
+    try {
+        const response = yield fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${process.env.KEY}&query=${req.query.query}`);
+        const json = yield response.json();
+        return res.json(json);
+    }
+    catch (e) {
+        return next(e);
+    }
+}));
 app.get("/api/foods/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield fetch(`https://api.nal.usda.gov/fdc/v1/food/${req.params.id}?api_key=${process.env.KEY}`);
@@ -29,7 +41,9 @@ app.get("/api/foods/:id", (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
 }));
 app.use((err, req, res, next) => {
-    if (err)
+    if (err) {
+        console.log(err.stack);
         res.status(500).json({ error: "an unknown error occurred" });
+    }
 });
 app.listen(443, () => console.log("listening at port 443..."));
