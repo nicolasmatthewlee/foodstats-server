@@ -3,11 +3,17 @@ import dotenv from "dotenv";
 import cors from "cors";
 import fs from "fs";
 import https from "https";
+import path, { resolve } from "path";
 dotenv.config();
 
 const app = express();
+app.use(cors({ credentials: true, origin: "http://127.0.0.1" }));
 
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+// client repository must be adjacent to server repository
+const clientPath = "../foodstats-client/build";
+if (!fs.existsSync(clientPath))
+  throw Error("Client build directory does not exist");
+app.use(express.static(clientPath));
 
 app.get("/api/foods/search", async (req, res, next) => {
   if (req.query.query === undefined) req.query.query = "";
@@ -33,6 +39,10 @@ app.get("/api/foods/:id", async (req, res, next) => {
   } catch (e) {
     return next(e);
   }
+});
+
+app.get("*", (req: Request, res: Response, next: NextFunction) => {
+  res.sendFile(path.join(resolve(clientPath), "index.html"));
 });
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
