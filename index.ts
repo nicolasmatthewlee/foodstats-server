@@ -1,8 +1,11 @@
 import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 dotenv.config();
 
 const app = express();
+
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 app.get("/api/foods/search", async (req, res, next) => {
   if (req.query.query === undefined) req.query.query = "";
