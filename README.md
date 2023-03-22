@@ -1,1 +1,1 @@
-# foodstats-api
+# foodstats-server
