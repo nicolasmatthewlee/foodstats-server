@@ -1,6 +1,8 @@
 import express, { NextFunction, Request, Response } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import fs from "fs";
+import https from "https";
 dotenv.config();
 
 const app = express();
@@ -40,6 +42,18 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.listen(process.env.PORT || 80, () =>
-  console.log(`listening at port ${process.env.PORT || 80}...`)
-);
+if (process.env.DIST) {
+  https
+    .createServer(
+      {
+        key: fs.readFileSync("/etc/letsencrypt/live/foodstats.net/privkey.pem"),
+        cert: fs.readFileSync("/etc/letsencrypt/live/foodstats.net/cert.pem"),
+        ca: fs.readFileSync("/etc/letsencrypt/live/foodstats.net/chain.pem"),
+      },
+      app
+    )
+    .listen(process.env.PORT || 443); // must be 443
+} else
+  app.listen(process.env.PORT || 80, () =>
+    console.log(`listening at port ${process.env.PORT || 80}...`)
+  );
