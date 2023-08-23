@@ -53,6 +53,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 if (process.env.DIST) {
+  // setup server
   https
     .createServer(
       {
@@ -63,6 +64,11 @@ if (process.env.DIST) {
       app
     )
     .listen(process.env.PORT || 443); // must be 443
+
+  // setup http server to redirect requests to https
+  const httpApp = express();
+  httpApp.all("*", (_, res) => res.redirect(301, "https://foodstats.net"));
+  httpApp.listen(80);
 } else
   app.listen(process.env.PORT || 80, () =>
     console.log(`listening at port ${process.env.PORT || 80}...`)
