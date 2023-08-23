@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import fs from "fs";
 import https from "https";
+import http from "http";
 import path, { resolve } from "path";
 dotenv.config();
 
@@ -68,7 +69,8 @@ if (process.env.DIST) {
   // setup http server to redirect requests to https
   const httpApp = express();
   httpApp.all("*", (_, res) => res.redirect(301, "https://foodstats.net"));
-  httpApp.listen(80);
+  const httpServer = http.createServer(httpApp);
+  httpServer.listen(80);
 } else
   app.listen(process.env.PORT || 80, () =>
     console.log(`listening at port ${process.env.PORT || 80}...`)
